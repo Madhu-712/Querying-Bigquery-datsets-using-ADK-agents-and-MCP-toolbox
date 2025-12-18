@@ -1,0 +1,68 @@
+sources:
+ my-bq-source:
+   kind: bigquery
+   project: mcp-app-bigquery
+
+tools:
+  search_world_bank_intl_education:
+   kind: bigquery-sql
+   source: my-bq-source
+   statement: |
+     
+       SELECT
+         country_name,
+         AVG(value) AS average
+       FROM
+         `bigquery-public-data.world_bank_intl_education.international_education`
+       WHERE
+         indicator_code = "SE.XPD.TOTL.GB.ZS"
+         AND year > 2000
+       GROUP BY
+         country_name
+       ORDER BY
+         average DESC
+   description: |
+     Use this tool to get info about goverment spends on education by country name.
+  search_release_notes_bq:
+   kind: bigquery-sql
+   source: my-bq-source
+ 
+   statement: |
+       SELECT
+         product_name,description,published_at
+       FROM
+         `bigquery-public-data`.`google_cloud_release_notes`.`release_notes`
+       WHERE
+         DATE(published_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+       GROUP BY product_name,description,published_at
+       ORDER BY published_at DESC
+   description: |
+     Use this tool to get information on Google Cloud Release Notes.
+  solar_potential_MountainView:
+   kind: bigquery-sql
+   source: my-bq-source
+   statement: |
+       SELECT 
+         region_name zip_code
+         ,percent_covered avg_percent_covered
+         ,kw_total total_kw_hours_possible
+         ,carbon_offset_metric_tons total_carbon_offset_possible
+       FROM `bigquery-public-data.sunroof_solar.solar_potential_by_postal_code` 
+       WHERE 
+        region_name = '94040' 
+        OR region_name = '94041'
+        OR region_name = '94043'
+   description: |
+     Use this tool to get percentage of buildings in Google Maps covered by Project Sunroof and their potential for power generation and carbon offset for the specified Mountain View, CA postal codes"
+
+
+toolsets:
+  my_bq_toolset:
+    - search_world_bank_intl_education
+    - search_release_notes_bq
+    - solar_potential_MountainView
+
+
+    
+    
+    
