@@ -47,6 +47,9 @@
  *    *   `my-agents/gcp_releasenotes_agent_app/agent.py`: The main entry point for the agent application.
     `toolbox/`: Contains the implementation of the MCP toolbox server.                                                                                            
       `tools.yaml`: Configuration file for the tools provided by the MCP toolbox.
+      - search_world_bank_intl_education: dataset which tells about government spendings on education by country names.
+      - search_release_notes_bq : dataset has info about latest releases, features, depreciation about GCP's bigquery
+      - solar_potential_MountainView : dataset has info about project sunroof which tells total area covered for a given pincode
  *   `README.md`: This file                                                                                                                                                                                                                                                                                                         
  ## Getting Started                                                                                                                                                
                                                                                                                                                                  
