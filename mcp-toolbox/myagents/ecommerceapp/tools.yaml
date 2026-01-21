@@ -1,0 +1,74 @@
+sources:
+ my-bq-source:
+   kind: bigquery
+   project: evalbqagents-adk
+
+tools:
+  salesbreakdown_product:
+   kind: bigquery-sql
+   source: my-bq-source
+   statement: |
+        SELECT oi.product_id as product_id, p.name as product_name, p.category as product_category, count(*) as num_of_orders
+        FROM `bigquery-public-data.thelook_ecommerce.products` as p 
+        JOIN `bigquery-public-data.thelook_ecommerce.order_items` as oi
+        ON p.id = oi.product_id
+        GROUP BY 1,2,3
+        ORDER BY num_of_orders DESC
+   description: |
+        Use this tool to get info about Total number of sales broken down by product in descending order   
+  
+  customersinfo:
+    kind: bigquery-sql
+    source: my-bq-source
+    statement: |
+         SELECT u.id as user_id, u.first_name, u.last_name, avg(oi.sale_price) as avg_sale_price
+         FROM `bigquery-public-data.thelook_ecommerce.users` as u 
+         JOIN `bigquery-public-data.thelook_ecommerce.order_items` as oi
+         ON u.id = oi.user_id
+         GROUP BY 1,2,3
+         ORDER BY avg_sale_price DESC
+         LIMIT 10
+    description: |
+          use this tool to get top 10 customers by average order price
+
+  userinfo:
+    kind: bigquery-sql
+    source: my-bq-source
+    statement: |
+         SELECT
+          t2.name,
+          t2.category,
+          t4.country,
+          COUNT(t1.product_id) AS total_orders_by_females
+         FROM
+          `bigquery-public-data`.`thelook_ecommerce`.`order_items` AS t1
+         INNER JOIN
+          `bigquery-public-data`.`thelook_ecommerce`.`products` AS t2
+         ON
+          t1.product_id = t2.id
+         INNER JOIN
+          `bigquery-public-data`.`thelook_ecommerce`.`orders` AS t3
+         ON
+           t1.order_id = t3.order_id
+         INNER JOIN
+          `bigquery-public-data`.`thelook_ecommerce`.`users` AS t4
+         ON
+          t3.user_id = t4.id
+         WHERE
+          t3.gender = 'F'
+         GROUP BY
+          t2.name,
+          t2.category,
+          t4.country
+         ORDER BY
+          total_orders_by_females DESC
+         LIMIT
+          10;
+    description: |
+          use this tool to get info about product name ,category and country origin most ordered by females
+
+toolsets: 
+  my_bq_toolset:
+    - salesbreakdown_product
+    - customersinfo
+    - userinfo
